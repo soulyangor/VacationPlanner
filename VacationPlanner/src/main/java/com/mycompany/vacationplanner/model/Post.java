@@ -5,6 +5,9 @@
  */
 package com.mycompany.vacationplanner.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
@@ -25,21 +28,34 @@ import javax.persistence.Version;
  * @author ֲÿקוסכאג
  */
 @Entity
-@Table(name = "subdivision")
+@JsonIgnoreProperties(ignoreUnknown = true)
+@Table(name = "post")
 @NamedQueries({
-    @NamedQuery(name = "Subdivision.findAll",
-            query = "SELECT s FROM Subdivision s")})
-public class Subdivision implements Serializable {
+    @NamedQuery(name = "Post.findAll", query = "SELECT p FROM Post p"),
+    @NamedQuery(name = "Post.findAllWithDetail",
+            query = "SELECT DISTINCT p FROM Post p LEFT JOIN FETCH "
+            + "p.employees e")})
+public class Post implements Serializable {
 
+    public static final String ID_PROPERTY = "id";
+    public static final String NAME_PROPERTY = "name";
+
+    @JsonProperty(ID_PROPERTY)
     private Long id;
+
+    @JsonIgnore
     private int version;
+
+    @JsonProperty(NAME_PROPERTY)
     private String name;
+
+    @JsonIgnore
     private Set<Employee> employees = new HashSet<Employee>();
 
-    public Subdivision() {
+    public Post() {
     }
 
-    public Subdivision(String name) {
+    public Post(String name) {
         this.name = name;
     }
 
@@ -73,7 +89,7 @@ public class Subdivision implements Serializable {
         this.name = name;
     }
 
-    @OneToMany(mappedBy = "subdivision", cascade = CascadeType.ALL,
+    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL,
             orphanRemoval = true)
     public Set<Employee> getEmployees() {
         return employees;
@@ -96,7 +112,7 @@ public class Subdivision implements Serializable {
         if (!(object instanceof Subdivision)) {
             return false;
         }
-        Subdivision other = (Subdivision) object;
+        Post other = (Post) object;
         if ((this.id == null && other.id != null)
                 || (this.id != null && !this.id.equals(other.id))) {
             return false;
@@ -106,11 +122,11 @@ public class Subdivision implements Serializable {
 
     @Override
     public String toString() {
-        return "Subdivision - Id: " + id + ", Name: " + name;
+        return "Post - Id: " + id + ", Name: " + name;
     }
 
     private void addEmployee(Employee employee) {
-        employee.setSubdivision(this);
+        employee.setPost(this);
         employees.add(employee);
     }
 

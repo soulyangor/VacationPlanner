@@ -5,6 +5,8 @@
  */
 package com.mycompany.vacationplanner.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.io.Serializable;
 import java.util.Date;
 import javax.persistence.Column;
@@ -14,6 +16,8 @@ import static javax.persistence.GenerationType.IDENTITY;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -25,15 +29,38 @@ import javax.persistence.Version;
  */
 @Entity
 @Table(name = "employee")
+@NamedQueries({
+    @NamedQuery(name = "Employee.findAll", query = "SELECT e FROM Employee e")})
 public class Employee implements Serializable {
 
+    public static final String FIRSTNAME_PROPERTY = "firstname";
+    public static final String SECONDNAME_PROPERTY = "secondname";
+    public static final String LASTNAME_PROPERTY = "lastname";
+    public static final String POST_PROPERTY = "post";
+
+    @JsonIgnore
     private Long id;
+
+    @JsonIgnore
     private int version;
+
+    @JsonProperty(FIRSTNAME_PROPERTY)
     private String firstName;
+
+    @JsonProperty(SECONDNAME_PROPERTY)
     private String secondName;
+
+    @JsonProperty(LASTNAME_PROPERTY)
     private String lastName;
+
+    @JsonIgnore
     private Date birthDate;
+
+    @JsonIgnore
     private Subdivision subdivision;
+
+    @JsonProperty(POST_PROPERTY)
+    private Post post;
 
     public Employee() {
     }
@@ -112,6 +139,16 @@ public class Employee implements Serializable {
         this.subdivision = subdivision;
     }
 
+    @ManyToOne
+    @JoinColumn(name = "POST_ID")
+    public Post getPost() {
+        return post;
+    }
+
+    public void setPost(Post post) {
+        this.post = post;
+    }
+
     @Override
     public int hashCode() {
         int hash = 0;
@@ -126,7 +163,8 @@ public class Employee implements Serializable {
             return false;
         }
         Employee other = (Employee) object;
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
+        if ((this.id == null && other.id != null)
+                || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
         return true;
@@ -134,7 +172,8 @@ public class Employee implements Serializable {
 
     @Override
     public String toString() {
-        return "Contact - Id: " + id + ", First name: " + firstName
-                + ", Last name: " + lastName + ", Birthday: " + birthDate;
+        return "Employee - Id: " + id + ", First name: " + firstName
+                + ", Second name: " + secondName
+                + ", Last name: " + lastName;
     }
 }
