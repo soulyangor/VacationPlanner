@@ -11,6 +11,7 @@ import com.mycompany.vacationplanner.service.PostService;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -36,17 +37,28 @@ public class PostRestController {
 
     @RequestMapping(method = RequestMethod.GET)
     public List<Post> getPostList() {
-        /* Post post1 = new Post("engineer");
-        Post post2 = new Post("оператор");
-        Post post3 = new Post("programmer");
-        postService.save(post1);
-        postService.save(post2);
-        postService.save(post3);*/
-        List<Post> result = postService.findAllWithDetails();
-        for (Post post : result) {
-            System.out.println(post);
-        }
-        return result;
+        return postService.findAll();
+    }
+
+    @RequestMapping(method = RequestMethod.POST,
+            path = ITEM_PATH,
+            consumes = MediaType.APPLICATION_JSON_VALUE)
+    public Post createPost(@RequestBody Post post) {
+        return postService.save(post);
+    }
+
+    @RequestMapping(method = RequestMethod.PUT,
+            path = ITEM_PATH,
+            consumes = MediaType.APPLICATION_JSON_VALUE)
+    public Post updatePost(@RequestBody Post post) {
+        return postService.save(post);
+    }
+
+    @RequestMapping(method = RequestMethod.DELETE,
+            path = ITEM_PATH,
+            consumes = MediaType.APPLICATION_JSON_VALUE)
+    public void deletePost(@RequestBody Post post) {
+        postService.delete(post);
     }
 
 }

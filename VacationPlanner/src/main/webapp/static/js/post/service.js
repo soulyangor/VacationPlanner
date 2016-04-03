@@ -2,6 +2,9 @@
 
 App.factory('PostService', ['$http', '$q', function ($http, $q) {
 
+        self.headers = {};
+        self.headers["Content-Type"] = 'application/json';
+
         return {
             fetchAllPosts: function () {
                 return $http.get('http://localhost:8085/VacationPlanner/posts')
@@ -16,7 +19,8 @@ App.factory('PostService', ['$http', '$q', function ($http, $q) {
                         );
             },
             createPost: function (post) {
-                return $http.post('http://localhost:8085/VacationPlanner/posts/item', post)
+                return $http.post('http://localhost:8085/VacationPlanner/posts/item',
+                        JSON.stringify(post))
                         .then(
                                 function (response) {
                                     return response.data;
@@ -28,7 +32,8 @@ App.factory('PostService', ['$http', '$q', function ($http, $q) {
                         );
             },
             updatePost: function (post) {
-                return $http.put('http://localhost:8085/VacationPlanner/posts/item', post)
+                return $http.put('http://localhost:8085/VacationPlanner/posts/item',
+                        JSON.stringify(post))
                         .then(
                                 function (response) {
                                     return response.data;
@@ -39,8 +44,11 @@ App.factory('PostService', ['$http', '$q', function ($http, $q) {
                                 }
                         );
             },
-            deletePost: function (id) {
-                return $http.delete('http://localhost:8085/VacationPlanner/posts/item' + id)
+            deletePost: function (post) {
+                return $http({method: 'DELETE',
+                    url: '/VacationPlanner/posts/item/',
+                    data: JSON.stringify(post),
+                    headers: self.headers})
                         .then(
                                 function (response) {
                                     return response.data;
@@ -53,7 +61,6 @@ App.factory('PostService', ['$http', '$q', function ($http, $q) {
             }
 
         };
-
     }]);
 
 
