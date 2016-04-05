@@ -5,6 +5,8 @@
  */
 package com.mycompany.vacationplanner.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
@@ -31,9 +33,19 @@ import javax.persistence.Version;
             query = "SELECT s FROM Subdivision s")})
 public class Subdivision implements Serializable {
 
+    public static final String ID_PROPERTY = "id";
+    public static final String NAME_PROPERTY = "name";
+
+    @JsonIgnore
     private Long id;
+
+    @JsonIgnore
     private int version;
+
+    @JsonProperty(NAME_PROPERTY)
     private String name;
+
+    @JsonIgnore
     private Set<Employee> employees = new HashSet<Employee>();
 
     public Subdivision() {
@@ -109,12 +121,12 @@ public class Subdivision implements Serializable {
         return "Subdivision - Id: " + id + ", Name: " + name;
     }
 
-    private void addEmployee(Employee employee) {
+    public void addEmployee(Employee employee) {
         employee.setSubdivision(this);
         employees.add(employee);
     }
 
-    private void removeEmployee(Employee employee) {
+    public void removeEmployee(Employee employee) {
         employees.remove(employee);
     }
 

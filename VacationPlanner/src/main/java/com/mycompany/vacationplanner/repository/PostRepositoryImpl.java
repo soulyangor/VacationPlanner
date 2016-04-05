@@ -3,7 +3,7 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.mycompany.vacationplanner.service;
+package com.mycompany.vacationplanner.repository;
 
 import com.mycompany.vacationplanner.model.Post;
 import java.util.List;
@@ -20,7 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service("jpaPostService")
 @Transactional
 @Repository
-public class PostServiceImpl implements PostService {
+public class PostRepositoryImpl implements PostRepository {
 
     @PersistenceContext
     private EntityManager em;

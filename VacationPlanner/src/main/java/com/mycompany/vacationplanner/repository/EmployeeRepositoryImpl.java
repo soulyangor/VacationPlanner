@@ -3,12 +3,12 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package com.mycompany.vacationplanner.service;
+package com.mycompany.vacationplanner.repository;
 
 /**
  *
  * @author ֲÿקוסכאג
  */
-public interface EmployeeService {
-    
+public class EmployeeRepositoryImpl implements EmployeeRepository {
+
 }

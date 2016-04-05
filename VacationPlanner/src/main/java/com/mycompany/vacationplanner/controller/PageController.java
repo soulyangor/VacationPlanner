@@ -1,8 +1,5 @@
 package com.mycompany.vacationplanner.controller;
 
-import com.mycompany.vacationplanner.model.Subdivision;
-import com.mycompany.vacationplanner.service.SubdivisionService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -22,6 +19,11 @@ public class PageController {
     @RequestMapping("/posts_page")
     public String getPostsPage() {
         return "posts_page";
+    }
+
+    @RequestMapping("/calendar_periods_page")
+    public String getCalendarPeriodsPage() {
+        return "calendar_periods_page";
     }
 
 }

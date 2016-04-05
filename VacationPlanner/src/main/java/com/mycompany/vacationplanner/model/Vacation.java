@@ -6,10 +6,9 @@
 package com.mycompany.vacationplanner.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.io.Serializable;
-import java.util.HashSet;
+import java.util.Date;
 import java.util.Set;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -17,10 +16,14 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import static javax.persistence.GenerationType.IDENTITY;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.persistence.Version;
 
 /**
@@ -28,35 +31,38 @@ import javax.persistence.Version;
  * @author ֲÿקוסכאג
  */
 @Entity
-@JsonIgnoreProperties(ignoreUnknown = true)
-@Table(name = "post")
+@Table(name = "vacation")
 @NamedQueries({
-    @NamedQuery(name = "Post.findAll", query = "SELECT p FROM Post p"),
-    @NamedQuery(name = "Post.findAllWithDetail",
-            query = "SELECT DISTINCT p FROM Post p LEFT JOIN FETCH "
-            + "p.employees e")})
-public class Post implements Serializable {
+    @NamedQuery(name = "Vacation.findAll", query = "SELECT v FROM Vacation v")})
+public class Vacation implements Serializable {
 
-    public static final String ID_PROPERTY = "id";
-    public static final String NAME_PROPERTY = "name";
+    public static final String START_DAY_PROPERTY = "startday";
+    public static final String END_DAY_PROPERTY = "endday";
 
-    @JsonProperty(ID_PROPERTY)
+    @JsonIgnore
     private Long id;
 
     @JsonIgnore
     private int version;
 
-    @JsonProperty(NAME_PROPERTY)
-    private String name;
+    @JsonProperty(START_DAY_PROPERTY)
+    private Date startDate;
+
+    @JsonProperty(END_DAY_PROPERTY)
+    private Date endDate;
 
     @JsonIgnore
-    private Set<Employee> employees = new HashSet<Employee>();
+    private Employee employee;
 
-    public Post() {
+    @JsonIgnore
+    private CalendarPeriod calendarPeriod;
+
+    public Vacation() {
     }
 
-    public Post(String name) {
-        this.name = name;
+    public Vacation(Date startDate, Date endDate) {
+        this.startDate = startDate;
+        this.endDate = endDate;
     }
 
     @Id
@@ -80,23 +86,44 @@ public class Post implements Serializable {
         this.version = version;
     }
 
-    @Column(name = "NAME")
-    public String getName() {
-        return name;
+    @Temporal(TemporalType.DATE)
+    @Column(name = "START_DATE")
+    public Date getStartDate() {
+        return startDate;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
     }
 
-    @OneToMany(mappedBy = "post", cascade = CascadeType.ALL,
-            orphanRemoval = true)
-    public Set<Employee> getEmployees() {
-        return employees;
+    @Temporal(TemporalType.DATE)
+    @Column(name = "END_DATE")
+    public Date getEndDate() {
+        return endDate;
     }
 
-    public void setEmployees(Set<Employee> employees) {
-        this.employees = employees;
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
+    }
+
+    @ManyToOne
+    @JoinColumn(name = "EMPLOYEE_ID")
+    public Employee getEmployee() {
+        return employee;
+    }
+
+    public void setEmployee(Employee employee) {
+        this.employee = employee;
+    }
+
+    @ManyToOne
+    @JoinColumn(name = "CALENDAR_PERIOD_ID")
+    public CalendarPeriod getCalendarPeriod() {
+        return calendarPeriod;
+    }
+
+    public void setCalendarPeriod(CalendarPeriod calendarPeriod) {
+        this.calendarPeriod = calendarPeriod;
     }
 
     @Override
@@ -109,10 +136,10 @@ public class Post implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Post)) {
+        if (!(object instanceof Vacation)) {
             return false;
         }
-        Post other = (Post) object;
+        Vacation other = (Vacation) object;
         if ((this.id == null && other.id != null)
                 || (this.id != null && !this.id.equals(other.id))) {
             return false;
@@ -122,16 +149,8 @@ public class Post implements Serializable {
 
     @Override
     public String toString() {
-        return "Post - Id: " + id + ", Name: " + name;
-    }
-
-    private void addEmployee(Employee employee) {
-        employee.setPost(this);
-        employees.add(employee);
-    }
-
-    private void removeEmployee(Employee employee) {
-        employees.remove(employee);
+        return "CalendarPeriod - Id: " + id + ", Start day: " + startDate
+                + ", End day: " + endDate;
     }
 
 }

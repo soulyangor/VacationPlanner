@@ -5,8 +5,8 @@
  */
 package com.mycompany.vacationplanner.controller;
 
-import static com.mycompany.vacationplanner.controller.PostRestController.POSTS_PATH;
-import com.mycompany.vacationplanner.model.Post;
+import static com.mycompany.vacationplanner.controller.CalendarPeriodController.CALENDAR_PERIODS_PATH;
+import com.mycompany.vacationplanner.model.CalendarPeriod;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -14,51 +14,50 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
-import com.mycompany.vacationplanner.repository.PostRepository;
+import com.mycompany.vacationplanner.repository.CalendarPeriodRepository;
 
 /**
  *
  * @author ֲÿקוסכאג
  */
 @RestController
-@RequestMapping(path = POSTS_PATH,
+@RequestMapping(path = CALENDAR_PERIODS_PATH,
         produces = MediaType.APPLICATION_JSON_VALUE)
-public class PostRestController {
+public class CalendarPeriodController {
 
-    public static final String POSTS_PATH = "/posts";
+    public static final String CALENDAR_PERIODS_PATH = "/calendar_periods";
     public static final String ITEM_PATH = "/item";
 
-    private PostRepository postRepository;
+    private CalendarPeriodRepository calendarPeriodRepository;
 
     @Autowired(required = false)
-    public void setPostRepository(PostRepository postRepository) {
-        this.postRepository = postRepository;
+    public void setCalendarPeriodRepository(CalendarPeriodRepository calendarPeriodRepository) {
+        this.calendarPeriodRepository = calendarPeriodRepository;
     }
 
     @RequestMapping(method = RequestMethod.GET)
-    public List<Post> getPostList() {
-        return postRepository.findAll();
+    public List<CalendarPeriod> getCalendarPeriodList() {
+        return calendarPeriodRepository.findAll();
     }
 
     @RequestMapping(method = RequestMethod.POST,
             path = ITEM_PATH,
             consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Post createPost(@RequestBody Post post) {
-        return postRepository.save(post);
+    public CalendarPeriod createCalendarPeriod(@RequestBody CalendarPeriod calendarPeriod) {
+        return calendarPeriodRepository.save(calendarPeriod);
     }
 
     @RequestMapping(method = RequestMethod.PUT,
             path = ITEM_PATH,
             consumes = MediaType.APPLICATION_JSON_VALUE)
-    public Post updatePost(@RequestBody Post post) {
-        return postRepository.save(post);
+    public CalendarPeriod updateCalendarPeriod(@RequestBody CalendarPeriod calendarPeriod) {
+        return calendarPeriodRepository.save(calendarPeriod);
     }
 
     @RequestMapping(method = RequestMethod.DELETE,
             path = ITEM_PATH,
             consumes = MediaType.APPLICATION_JSON_VALUE)
-    public void deletePost(@RequestBody Post post) {
-        postRepository.delete(post);
+    public void deletePost(@RequestBody CalendarPeriod calendarPeriod) {
+        calendarPeriodRepository.delete(calendarPeriod);
     }
-
 }

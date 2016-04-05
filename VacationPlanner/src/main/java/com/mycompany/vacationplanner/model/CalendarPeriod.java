@@ -16,8 +16,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import static javax.persistence.GenerationType.IDENTITY;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -31,50 +29,48 @@ import javax.persistence.Version;
  * @author ֲÿקוסכאג
  */
 @Entity
-@Table(name = "employee")
+@Table(name = "calendarPeriod")
 @NamedQueries({
-    @NamedQuery(name = "Employee.findAll", query = "SELECT e FROM Employee e")})
-public class Employee implements Serializable {
+    @NamedQuery(name = "CalendarPeriod.findAll", query = "SELECT c FROM CalendarPeriod c"),
+    @NamedQuery(name = "CalendarPeriod.findById",
+            query = "SELECT DISTINCT c FROM CalendarPeriod c LEFT JOIN FETCH "
+            + "c.celebrations e LEFT JOIN FETCH c.vacations v "
+            + "WHERE c.id = :id")})
+public class CalendarPeriod implements Serializable {
 
-    public static final String FIRSTNAME_PROPERTY = "firstname";
-    public static final String SECONDNAME_PROPERTY = "secondname";
-    public static final String LASTNAME_PROPERTY = "lastname";
-    public static final String POST_PROPERTY = "post";
+    public static final String ID_PROPERTY = "id";
+    public static final String NAME_PROPERTY = "name";
+    public static final String START_DAY_PROPERTY = "startday";
+    public static final String END_DAY_PROPERTY = "endday";
 
-    @JsonIgnore
+    @JsonProperty(ID_PROPERTY)
     private Long id;
 
     @JsonIgnore
     private int version;
 
-    @JsonProperty(FIRSTNAME_PROPERTY)
-    private String firstName;
+    @JsonProperty(NAME_PROPERTY)
+    private String name;
 
-    @JsonProperty(SECONDNAME_PROPERTY)
-    private String secondName;
+    @JsonProperty(START_DAY_PROPERTY)
+    private Date startDate;
 
-    @JsonProperty(LASTNAME_PROPERTY)
-    private String lastName;
-
-    @JsonIgnore
-    private Date birthDate;
+    @JsonProperty(END_DAY_PROPERTY)
+    private Date endDate;
 
     @JsonIgnore
-    private Subdivision subdivision;
-
-    @JsonProperty(POST_PROPERTY)
-    private Post post;
+    private Set<Celebration> celebrations;
 
     @JsonIgnore
     private Set<Vacation> vacations;
 
-    public Employee() {
+    public CalendarPeriod() {
     }
 
-    public Employee(String firstName, String secondName, String lastName) {
-        this.firstName = firstName;
-        this.secondName = secondName;
-        this.lastName = lastName;
+    public CalendarPeriod(String name, Date startDate, Date endDate) {
+        this.name = name;
+        this.startDate = startDate;
+        this.endDate = endDate;
     }
 
     @Id
@@ -98,64 +94,46 @@ public class Employee implements Serializable {
         this.version = version;
     }
 
-    @Column(name = "FIRST_NAME")
-    public String getFirstName() {
-        return firstName;
+    @Column(name = "NAME")
+    public String getName() {
+        return name;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    @Column(name = "SECOND_NAME")
-    public String getSecondName() {
-        return secondName;
-    }
-
-    public void setSecondName(String secondName) {
-        this.secondName = secondName;
-    }
-
-    @Column(name = "LAST_NAME")
-    public String getLastName() {
-        return lastName;
-    }
-
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
+    public void setName(String name) {
+        this.name = name;
     }
 
     @Temporal(TemporalType.DATE)
-    @Column(name = "BIRTH_DATE")
-    public Date getBirthDate() {
-        return birthDate;
+    @Column(name = "START_DATE")
+    public Date getStartDate() {
+        return startDate;
     }
 
-    public void setBirthDate(Date birthDate) {
-        this.birthDate = birthDate;
+    public void setStartDate(Date startDate) {
+        this.startDate = startDate;
     }
 
-    @ManyToOne
-    @JoinColumn(name = "SUBDIVISION_ID")
-    public Subdivision getSubdivision() {
-        return subdivision;
+    @Temporal(TemporalType.DATE)
+    @Column(name = "END_DATE")
+    public Date getEndDate() {
+        return endDate;
     }
 
-    public void setSubdivision(Subdivision subdivision) {
-        this.subdivision = subdivision;
+    public void setEndDate(Date endDate) {
+        this.endDate = endDate;
     }
 
-    @ManyToOne
-    @JoinColumn(name = "POST_ID")
-    public Post getPost() {
-        return post;
+    @OneToMany(mappedBy = "calendarPeriod", cascade = CascadeType.ALL,
+            orphanRemoval = true)
+    public Set<Celebration> getCelebrations() {
+        return celebrations;
     }
 
-    public void setPost(Post post) {
-        this.post = post;
+    public void setCelebrations(Set<Celebration> celebrations) {
+        this.celebrations = celebrations;
     }
 
-    @OneToMany(mappedBy = "employee", cascade = CascadeType.ALL,
+    @OneToMany(mappedBy = "calendarPeriod", cascade = CascadeType.ALL,
             orphanRemoval = true)
     public Set<Vacation> getVacations() {
         return vacations;
@@ -175,10 +153,10 @@ public class Employee implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Employee)) {
+        if (!(object instanceof CalendarPeriod)) {
             return false;
         }
-        Employee other = (Employee) object;
+        CalendarPeriod other = (CalendarPeriod) object;
         if ((this.id == null && other.id != null)
                 || (this.id != null && !this.id.equals(other.id))) {
             return false;
@@ -188,18 +166,25 @@ public class Employee implements Serializable {
 
     @Override
     public String toString() {
-        return "Employee - Id: " + id + ", First name: " + firstName
-                + ", Second name: " + secondName
-                + ", Last name: " + lastName;
+        return "CalendarPeriod - Id: " + id + ", Start day: " + startDate
+                + ", End day: " + endDate;
+    }
+
+    public void addCelebration(Celebration celebration) {
+        celebration.setCalendarPeriod(this);
+        celebrations.add(celebration);
+    }
+
+    public void removeCelebration(Celebration celebration) {
+        celebrations.remove(celebration);
     }
 
     public void addVacation(Vacation vacation) {
-        vacation.setEmployee(this);
+        vacation.setCalendarPeriod(this);
         vacations.add(vacation);
     }
 
     public void removeVacation(Vacation vacation) {
         vacations.remove(vacation);
     }
-
 }
